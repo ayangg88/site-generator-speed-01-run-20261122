@@ -356,7 +356,8 @@ function inlineRange(s, a, b, link, out) {
   while (i < b) {
     const c = s[i];
     if (c === '\\' && i + 1 < b && ESCAPABLE.has(s[i + 1])) {
-      out.push(s[i + 1]);
+      const e = s[i + 1];
+      out.push(e === '>' ? '&gt;' : e);
       i += 2;
       continue;
     }
@@ -423,10 +424,11 @@ function inlineRange(s, a, b, link, out) {
     let j = i;
     while (j < b) {
       const d = s[j];
-      if (d === '\\' || d === '`' || d === '*' || d === '[') break;
+      if (d === '`' || d === '*' || d === '[') break;
+      if (d === '\\' && j + 1 < b && ESCAPABLE.has(s[j + 1])) break;
       j++;
     }
-    escAppend(s.slice(i, j), out);
+    if (j > i) escAppend(s.slice(i, j), out);
     i = j;
   }
 }
